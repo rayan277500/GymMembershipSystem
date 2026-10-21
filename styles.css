@@ -1,0 +1,72 @@
+
+body {
+    background-color: black;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    color: orange;
+    text-shadow: 2px 2px 4px gray;
+}
+
+a {
+    color: orange;
+}
+
+nav {
+    background-color: gray;
+    padding: 15px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0px 3px 8px gray;
+    border-radius: 8px;
+}
+
+nav a {
+    margin-right: 20px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: white;
+    
+}
+table {
+    border: 2px solid orange;
+    background-color: black;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid orange;
+}
+
+th {
+    background-color: gray;
+}
+
+.gymButton {
+    background-color: orange;
+    color: black;
+    padding: 10px;
+    border: 2px solid orange;
+    border-radius: 10px;
+    font-weight: bold;
+}
+.plans-table {
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px orange;
+}
+input:focus {
+    background-color: lightyellow;
+}
+.gym-photo {
+    width: 350px;
+    max-width: 100%;
+    height: auto;
+    border: 2px solid orange;
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px gray;
+}
