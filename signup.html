@@ -13,12 +13,13 @@
         </nav>
         <h1>Create Your Gym Account</h1>
         <p>Register to become a member of our gym.</p>
-        <form>
-            <p><label>Full Name: <input type="text" name="fullname" required></label></p>
-            <p><label>Phone Number: <input type="tel" name="phone" required></label></p>
-            <p><label>Email: <input type="email" name="email" required></label></p>
-            <p><label>Password: <input type="password" name="password" required></label></p>
+        <form onsubmit="return validateSignup()">
+            <p><label>Full Name: <input type="text" name="fullname" id="fullname" required></label></p>
+            <p><label>Phone Number: <input type="tel" name="phone" id="phone" required></label></p>
+            <p><label>Email: <input type="email" name="email" id="email" required></label></p>
+            <p><label>Password: <input type="password" name="password" id="password" required></label></p>
             <input type="submit" value="Sign Up" class="gymButton">
+            <p id="signupMessage"></p>
         </form>
         <h2>Cardio Training Area</h2>
 <p>Discover our modern cardio equipment.</p>
@@ -33,6 +34,6 @@
           href="about.html"
           alt="About Our Gym">
 </map>
-        
+        <script src="script.js"></script>
     </body>
 </html>

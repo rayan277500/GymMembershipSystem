@@ -13,10 +13,11 @@
         </nav>
         <h1>Member Login</h1>
         <p>Sign in to access your gym membership.</p>
-        <form>
-            <p><label>Email: <input type="email" name="email" required></label></p>
-            <p><label>Password: <input type="password" name="password" required></label></p>
+        <form onsubmit="return validateLogin()">
+            <p><label>Email: <input type="email" name="email" id="loginEmail" required></label></p>
+            <p><label>Password: <input type="password" name="password" id="loginPassword" required></label></p>
             <input type="submit" value="Login" class="gymButton">
+            <p id="loginMessage"></p>
         </form>
         <h2>Our Reception Area</h2>
 <p>Welcome to our gym.</p>
@@ -31,6 +32,6 @@
           href="about.html"
           alt="About Our Gym">
 </map>
-       
+       <script src="script.js"></script>
     </body>
 </html>
