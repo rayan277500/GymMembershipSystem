@@ -48,19 +48,38 @@
                 <td>1400 SAR</td>
             </tr>
         </table>
-        <h2>Our Gym Interior</h2>
-<p>Take a look inside our gym.</p>
+      <h2 id="gymTitle">Our Gym Interior</h2>
 
-<img src="images/gym-interior.jpeg"
-     alt="Gym Interior"
-     class="gym-photo"
-     usemap="#gymmap">
+          <p id="gymDescription">Take a look inside our gym.</p>
 
-<map name="gymmap">
-    <area shape="default"
-          href="about.html"
-          alt="About Our Gym">
-</map>
+            <img id="gymPhoto"
+              src="images/gym-interior.jpeg"
+              alt="Gym Interior"
+              class="gym-photo"
+              usemap="#gymmap">
+
+            <map name="gymmap">
+            <area shape="default"
+              href="about.html"
+              alt="About Our Gym">
+         </map>
+
+         <p>Explore Our Gym Areas:</p>
+
+         <button type="button" class="gymButton"
+           onclick="showGymPhoto('interior')">
+         Gym Interior
+    </button>
+
+        <button type="button" class="gymButton"
+         onclick="showGymPhoto('cardio')">
+      Cardio Area
+    </button>
+
+        <button type="button" class="gymButton"
+           onclick="showGymPhoto('weights')">
+         Weight Training
+    </button>
 
         <section>
             <h2>About Our System</h2>
@@ -114,5 +133,6 @@
                 and makes membership management more efficient.
             </p>
         </section>
+        <script src="script.js"></script>
     </body>
 </html>
