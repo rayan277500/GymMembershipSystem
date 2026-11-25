@@ -1,0 +1,189 @@
+@model IEnumerable<GymMembershipSystemA3.Models.GymSubscription>
+
+@{
+    ViewData["Title"] = "Manage Subscriptions";
+    DateTime now = DateTime.UtcNow;
+}
+
+<h1>Manage Subscriptions</h1>
+
+<p>Review and manage gym membership requests.</p>
+
+@if (TempData["Message"] != null)
+{
+    <p style="color: orange;">@TempData["Message"]</p>
+}
+
+<h2>Search Subscriptions</h2>
+
+<p>Search by member name, phone number, or both.</p>
+
+<form asp-controller="Subscriptions"
+      asp-action="Index"
+      method="get"
+      style="display: flex; gap: 15px; flex-wrap: wrap; align-items: end; margin: 25px 0;">
+
+    <div>
+        <label for="searchName">Member Name</label>
+
+        <p>
+            <input type="text"
+                   id="searchName"
+                   name="searchName"
+                   value="@ViewBag.SearchName"
+                   placeholder="Enter member name"
+                   style="padding: 10px; border-radius: 5px;" />
+        </p>
+    </div>
+
+    <div>
+        <label for="searchPhone">Phone Number</label>
+
+        <p>
+            <input type="tel"
+                   id="searchPhone"
+                   name="searchPhone"
+                   value="@ViewBag.SearchPhone"
+                   placeholder="Enter phone number"
+                   style="padding: 10px; border-radius: 5px;" />
+        </p>
+    </div>
+
+    <button type="submit" class="gymButton">
+        Search
+    </button>
+
+    <a asp-controller="Subscriptions"
+       asp-action="Index"
+       class="gymButton">
+        Show All
+    </a>
+
+</form>
+
+<h2>Subscription Records</h2>
+
+@if (!Model.Any())
+{
+    <p>No matching subscriptions found.</p>
+}
+else
+{
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Phone Number</th>
+                    <th>Plan</th>
+                    <th>Requested</th>
+                    <th>Status</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var subscription in Model)
+                {
+                    bool isApproved =
+                        subscription.Status == "Active" ||
+                        subscription.Status == "Renewed";
+
+                    bool isExpired =
+                        isApproved &&
+                        subscription.EndDate.HasValue &&
+                        subscription.EndDate.Value <= now;
+
+                    bool canCancel =
+                        isApproved &&
+                        subscription.StartDate.HasValue &&
+                        subscription.EndDate.HasValue &&
+                        subscription.EndDate.Value > now;
+
+                    string status = isExpired
+                        ? "Expired"
+                        : subscription.Status;
+
+                    <tr>
+                        <td>@subscription.GymMember.FullName</td>
+
+                        <td>@subscription.GymMember.PhoneNumber</td>
+
+                        <td>@subscription.MembershipPlan.Name</td>
+
+                        <td>
+                            @subscription.RequestedAt.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)
+                        </td>
+
+                        <td>@status</td>
+
+                        <td>
+                            @(subscription.StartDate?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) ?? "-")
+                        </td>
+
+                        <td>
+                            @(subscription.EndDate?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) ?? "-")
+                        </td>
+
+                        <td>
+                            @if (subscription.Status == "Pending")
+                            {
+                                <form asp-controller="Subscriptions"
+                                      asp-action="Approve"
+                                      method="post"
+                                      style="display: inline;">
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@subscription.Id" />
+
+                                    <button type="submit" class="gymButton">
+                                        Approve
+                                    </button>
+                                </form>
+
+                                <form asp-controller="Subscriptions"
+                                      asp-action="Reject"
+                                      method="post"
+                                      style="display: inline;">
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@subscription.Id" />
+
+                                    <button type="submit">
+                                        Reject
+                                    </button>
+                                </form>
+                            }
+                            else if (canCancel)
+                            {
+                                <form asp-controller="Subscriptions"
+                                      asp-action="Cancel"
+                                      method="post"
+                                      style="display: inline;"
+                                      onsubmit="return confirm('Are you sure you want to cancel this subscription?');">
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@subscription.Id" />
+
+                                    <button type="submit"
+                                            style="background: red; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">
+                                        Cancel Subscription
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,147 @@
+@model IEnumerable<GymMembershipSystemA3.Models.GymSubscription>
+
+@{
+    ViewData["Title"] = "My Subscriptions";
+
+    DateTime now = DateTime.UtcNow;
+
+    bool hasPendingRequest = Model.Any(s => s.Status == "Pending");
+
+    bool hasUpcomingOrActiveSubscription = Model.Any(s =>
+        (s.Status == "Active" || s.Status == "Renewed") &&
+        s.EndDate.HasValue &&
+        s.EndDate.Value > now);
+}
+
+<h1>My Subscriptions</h1>
+
+<p>View your membership requests and subscription status.</p>
+
+@if (TempData["Message"] != null)
+{
+    <p style="color: orange;">@TempData["Message"]</p>
+}
+
+<p>
+    <a asp-controller="MembershipPlans"
+       asp-action="Index"
+       class="gymButton">
+        Browse Membership Plans
+    </a>
+</p>
+
+<h2>Subscription History</h2>
+
+@if (!Model.Any())
+{
+    <p>You have no subscriptions yet.</p>
+}
+else
+{
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Plan</th>
+                    <th>Status</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var subscription in Model)
+                {
+                    string status = subscription.Status;
+
+                    if (status == "Active" || status == "Renewed")
+                    {
+                        if (subscription.EndDate.HasValue &&
+                            subscription.EndDate.Value <= now)
+                        {
+                            status = "Expired";
+                        }
+                        else if (subscription.StartDate.HasValue &&
+                                 subscription.StartDate.Value <= now &&
+                                 subscription.EndDate.HasValue &&
+                                 subscription.EndDate.Value > now)
+                        {
+                            status = "Active";
+                        }
+                    }
+
+                    <tr>
+                        <td>@subscription.MembershipPlan.Name</td>
+
+                        <td>@status</td>
+
+                        <td>
+                            @(subscription.StartDate?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) ?? "-")
+                        </td>
+
+                        <td>
+                            @(subscription.EndDate?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) ?? "-")
+                        </td>
+
+                        <td>
+                            @if (status == "Active")
+                            {
+                                if (hasPendingRequest)
+                                {
+                                    <span>Renewal Pending</span>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Subscriptions"
+                                       asp-action="Subscribe"
+                                       asp-route-planId="@subscription.MembershipPlanId">
+                                        Renew
+                                    </a>
+                                }
+                            }
+                            else if (status == "Expired")
+                            {
+                                if (!hasUpcomingOrActiveSubscription && !hasPendingRequest)
+                                {
+                                    <a asp-controller="Subscriptions"
+                                       asp-action="Subscribe"
+                                       asp-route-planId="@subscription.MembershipPlanId">
+                                        Renew
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            }
+                            else if (status == "Rejected")
+                            {
+                                if (!hasUpcomingOrActiveSubscription && !hasPendingRequest)
+                                {
+                                    <a asp-controller="Subscriptions"
+                                       asp-action="Subscribe"
+                                       asp-route-planId="@subscription.MembershipPlanId">
+                                        Request Again
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            }
+                            else if (status == "Pending")
+                            {
+                                <span>Pending</span>
+                            }
+                            else if (status == "Renewed")
+                            {
+                                <span>Renewed</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

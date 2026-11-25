@@ -1,0 +1,304 @@
+@model GymMembershipSystemA3.Models.GymOccupancyViewModel
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Gym Occupancy";
+
+    var visitHistory =
+        ViewBag.VisitHistory as List<GymMembershipSystemA3.Models.GymVisit>
+        ?? new List<GymMembershipSystemA3.Models.GymVisit>();
+}
+
+<h1>Gym Occupancy</h1>
+
+<p>Check the current gym occupancy and crowd level.</p>
+
+@if (TempData["Message"] != null)
+{
+    <p style="color: orange;">@TempData["Message"]</p>
+}
+
+<h2>Live Gym Status</h2>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 25px 0;">
+
+    <div style="background: #333; padding: 20px; border: 2px solid orange; border-radius: 10px;">
+        <h3>People Inside</h3>
+        <h2>
+            <span id="insideCount">@Model.InsideCount</span>
+        </h2>
+    </div>
+
+    <div style="background: #333; padding: 20px; border: 2px solid orange; border-radius: 10px;">
+        <h3>Gym Capacity</h3>
+        <h2>
+            <span id="gymCapacity">@Model.Capacity</span>
+        </h2>
+    </div>
+
+    <div style="background: #333; padding: 20px; border: 2px solid orange; border-radius: 10px;">
+        <h3>Available Spots</h3>
+        <h2>
+            <span id="availablePlaces">@Model.AvailablePlaces</span>
+        </h2>
+    </div>
+
+</div>
+
+<h2>Current Crowd Level</h2>
+
+<p style="font-size: 24px; color: orange; font-weight: bold;">
+    <span id="crowdLevel">@Model.CrowdLevel</span>
+</p>
+
+<p>
+    Occupancy:
+    <span id="occupancyPercent">@Model.OccupancyPercent</span>%
+</p>
+
+<progress id="occupancyProgress"
+          value="@Model.InsideCount"
+          max="@Model.Capacity"
+          style="width: 350px; max-width: 100%; height: 25px;">
+</progress>
+
+<p>Occupancy information updates automatically every 10 seconds.</p>
+
+<p style="color: orange;">All visit dates and times use Saudi Arabia Time (UTC+3).</p>
+
+@if (User.IsInRole("Member"))
+{
+    <h2>Gym Check-in / Check-out</h2>
+
+    @if (Model.IsCheckedIn)
+    {
+        <p>You are currently inside the gym.</p>
+
+        <form asp-controller="GymOccupancy"
+              asp-action="CheckOut"
+              method="post">
+
+            <button type="submit" class="gymButton">
+                Check Out
+            </button>
+        </form>
+    }
+    else if (Model.HasActiveSubscription)
+    {
+        <p>Your membership is active. You can check in.</p>
+
+        <form asp-controller="GymOccupancy"
+              asp-action="CheckIn"
+              method="post">
+
+            <button type="submit" class="gymButton">
+                Check In
+            </button>
+        </form>
+    }
+    else
+    {
+        <p style="color: orange;">
+            You need an active membership to check in.
+        </p>
+
+        <a asp-controller="MembershipPlans"
+           asp-action="Index"
+           class="gymButton">
+            View Membership Plans
+        </a>
+    }
+
+    <h2>My Gym Visits</h2>
+
+    @if (!visitHistory.Any())
+    {
+        <p>You have no gym visits yet.</p>
+    }
+    else
+    {
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Check-in Date</th>
+                        <th>Check-in Time</th>
+                        <th>Check-out Date</th>
+                        <th>Check-out Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var visit in visitHistory)
+                    {
+                        <tr>
+                            <td>
+                                @visit.CheckInAt.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                            </td>
+
+                            <td>
+                                @visit.CheckInAt.ToString("hh:mm tt", CultureInfo.InvariantCulture)
+                            </td>
+
+                            @if (visit.CheckOutAt.HasValue)
+                            {
+                                <td>
+                                    @visit.CheckOutAt.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                                </td>
+
+                                <td>
+                                    @visit.CheckOutAt.Value.ToString("hh:mm tt", CultureInfo.InvariantCulture)
+                                </td>
+
+                                <td>Completed</td>
+                            }
+                            else
+                            {
+                                <td>-</td>
+                                <td>-</td>
+                                <td>Inside</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <h2>Members Currently Inside</h2>
+
+    @if (!Model.VisitorsInside.Any())
+    {
+        <p>No members are currently checked in.</p>
+    }
+    else
+    {
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member Name</th>
+                        <th>Check-in Date</th>
+                        <th>Check-in Time</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var visit in Model.VisitorsInside)
+                    {
+                        <tr>
+                            <td>@visit.GymMember.FullName</td>
+
+                            <td>
+                                @visit.CheckInAt.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                            </td>
+
+                            <td>
+                                @visit.CheckInAt.ToString("hh:mm tt", CultureInfo.InvariantCulture)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h2>Recent Gym Visits</h2>
+
+    @if (!visitHistory.Any())
+    {
+        <p>No gym visits found.</p>
+    }
+    else
+    {
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member Name</th>
+                        <th>Check-in Date</th>
+                        <th>Check-in Time</th>
+                        <th>Check-out Date</th>
+                        <th>Check-out Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var visit in visitHistory)
+                    {
+                        <tr>
+                            <td>@visit.GymMember.FullName</td>
+
+                            <td>
+                                @visit.CheckInAt.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                            </td>
+
+                            <td>
+                                @visit.CheckInAt.ToString("hh:mm tt", CultureInfo.InvariantCulture)
+                            </td>
+
+                            @if (visit.CheckOutAt.HasValue)
+                            {
+                                <td>
+                                    @visit.CheckOutAt.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                                </td>
+
+                                <td>
+                                    @visit.CheckOutAt.Value.ToString("hh:mm tt", CultureInfo.InvariantCulture)
+                                </td>
+
+                                <td>Completed</td>
+                            }
+                            else
+                            {
+                                <td>-</td>
+                                <td>-</td>
+                                <td>Inside</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <p>Refresh the page to see the latest visitor records.</p>
+}
+
+@section Scripts {
+    <script>
+        async function refreshOccupancy() {
+            try {
+                const response = await fetch('@Url.Action("Status", "GymOccupancy")', {
+                    cache: "no-store"
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const status = await response.json();
+
+                document.getElementById("insideCount").textContent = status.insideCount;
+                document.getElementById("gymCapacity").textContent = status.capacity;
+                document.getElementById("availablePlaces").textContent = status.availablePlaces;
+                document.getElementById("crowdLevel").textContent = status.crowdLevel;
+                document.getElementById("occupancyPercent").textContent = status.percentage;
+
+                const progress = document.getElementById("occupancyProgress");
+
+                progress.max = status.capacity;
+                progress.value = status.insideCount;
+            }
+            catch (error) {
+            }
+        }
+
+        setInterval(refreshOccupancy, 10000);
+    </script>
+}

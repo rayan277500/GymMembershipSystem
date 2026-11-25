@@ -1,0 +1,109 @@
+@model IEnumerable<GymMembershipSystemA3.Models.MembershipPlan>
+
+@{
+    ViewData["Title"] = "Membership Plans";
+}
+
+<h1>Membership Plans</h1>
+
+<p>View and manage our gym membership plans.</p>
+
+<div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin: 25px 0;">
+
+    <form asp-controller="MembershipPlans"
+          asp-action="Index"
+          method="get"
+          style="display: flex; gap: 10px;">
+
+        <input type="text"
+               name="searchString"
+               value="@ViewBag.SearchString"
+               placeholder="Search by plan name"
+               aria-label="Search membership plans"
+               style="padding: 10px; border-radius: 5px;" />
+
+        <button type="submit">Search</button>
+    </form>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="MembershipPlans"
+           asp-action="Create"
+           class="gymButton">
+            Add New Plan
+        </a>
+    }
+</div>
+
+<h2>Available Plans</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Plan Name</th>
+            <th>Duration</th>
+            <th>Price</th>
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Member"))
+            {
+                <th>Actions</th>
+            }
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var plan in Model)
+        {
+            <tr>
+                <td>@plan.Name</td>
+
+                <td>@plan.DurationMonths Months</td>
+
+                <td>@plan.Price SAR</td>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <td>
+                        <a asp-controller="MembershipPlans"
+                           asp-action="Edit"
+                           asp-route-id="@plan.Id">
+                            Edit
+                        </a>
+
+                        |
+
+                        <a asp-controller="MembershipPlans"
+                           asp-action="Delete"
+                           asp-route-id="@plan.Id">
+                            Delete
+                        </a>
+                    </td>
+                }
+                else if (User.IsInRole("Member"))
+                {
+                    <td>
+                        <a asp-controller="Subscriptions"
+                           asp-action="Subscribe"
+                           asp-route-planId="@plan.Id">
+                            Subscribe
+                        </a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p>No membership plans found.</p>
+}
+
+@if (User.Identity?.IsAuthenticated != true)
+{
+    <p>
+        <a asp-controller="Account" asp-action="Login">
+            Log in to subscribe to a plan.
+        </a>
+    </p>
+}

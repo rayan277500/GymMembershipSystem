@@ -1,0 +1,52 @@
+@model GymMembershipSystemA3.Models.MembershipPlan
+
+@{
+    bool isRenewal = ViewBag.IsRenewal == true;
+    ViewData["Title"] = isRenewal ? "Renew Membership" : "Subscribe";
+}
+
+@if (isRenewal)
+{
+    <h1>Renew Membership</h1>
+
+    <p>Extend your current gym membership.</p>
+}
+else
+{
+    <h1>Request Membership</h1>
+
+    <p>Review your selected membership plan.</p>
+}
+
+<h2>@Model.Name</h2>
+
+<p>Duration: @Model.DurationMonths Months</p>
+
+<p>Price: @Model.Price SAR</p>
+
+@if (isRenewal)
+{
+    <p>Current End Date: @ViewBag.CurrentEndDate</p>
+
+    <p>New End Date After Approval: @ViewBag.NewEndDate</p>
+}
+
+<p>Your request will be reviewed by the gym administrator.</p>
+
+<form asp-controller="Subscriptions"
+      asp-action="Subscribe"
+      method="post">
+
+    <input type="hidden" name="planId" value="@Model.Id" />
+
+    <button type="submit" class="gymButton">
+        @(isRenewal ? "Request Renewal" : "Request Subscription")
+    </button>
+
+</form>
+
+<p>
+    <a asp-controller="Subscriptions" asp-action="My">
+        Back to My Subscriptions
+    </a>
+</p>
