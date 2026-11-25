@@ -1,0 +1,72 @@
+@model GymMembershipSystemA3.Models.GymMember
+
+@{
+    ViewData["Title"] = "Edit Member";
+}
+
+<h1>Edit Member</h1>
+
+<p>Update the member's personal information.</p>
+
+@if (ViewBag.Message != null)
+{
+    <p style="color: orange;">@ViewBag.Message</p>
+}
+
+<form asp-controller="Members"
+      asp-action="Edit"
+      method="post">
+
+    <input type="hidden"
+           name="id"
+           value="@Model.Id" />
+
+    <p>
+        <label for="fullName">Full Name</label>
+    </p>
+
+    <p>
+        <input type="text"
+               id="fullName"
+               name="fullName"
+               value="@(ViewBag.EnteredFullName ?? Model.FullName)"
+               minlength="2"
+               maxlength="100"
+               required
+               style="padding: 10px; width: 350px; max-width: 100%; border-radius: 5px;" />
+    </p>
+
+    <p>
+        <label for="phoneNumber">Phone Number</label>
+    </p>
+
+    <p>
+        <input type="tel"
+               id="phoneNumber"
+               name="phoneNumber"
+               value="@(ViewBag.EnteredPhone ?? Model.PhoneNumber)"
+               pattern="05[0-9]{8}"
+               maxlength="10"
+               required
+               style="padding: 10px; width: 350px; max-width: 100%; border-radius: 5px;" />
+    </p>
+
+    <p>
+        <strong>Email:</strong> @Model.Email
+    </p>
+
+    <p>
+        <strong>Role:</strong> @Model.Role
+    </p>
+
+    <button type="submit" class="gymButton">
+        Save Changes
+    </button>
+
+    <a asp-controller="Members"
+       asp-action="Details"
+       asp-route-id="@Model.Id"
+       style="margin-left: 15px;">
+        Cancel
+    </a>
+</form>

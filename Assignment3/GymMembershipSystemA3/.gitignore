@@ -1,0 +1,17 @@
+bin/
+obj/
+.vs/
+.DS_Store
+
+*.user
+*.suo
+*.log
+
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+.env
+.env.*
+appsettings.Development.json

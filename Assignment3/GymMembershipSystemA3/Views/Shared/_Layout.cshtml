@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Gym Membership Management System</title>
+
+    <link rel="stylesheet" href="~/css/styles.css" />
+</head>
+
+<body>
+
+    <header>
+        <nav>
+
+            <a asp-controller="Home"
+               asp-action="Index">
+                Home
+            </a>
+
+            <a asp-controller="Home"
+               asp-action="About">
+                About Us
+            </a>
+
+            <a asp-controller="Home"
+               asp-action="SessionInfo">
+                Session Info
+            </a>
+
+            <a asp-controller="MembershipPlans"
+               asp-action="Index">
+                Membership Plans
+            </a>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-controller="GymOccupancy"
+                   asp-action="Index">
+                    Gym Occupancy
+                </a>
+
+                @if (User.IsInRole("Member"))
+                {
+                    <a asp-controller="Subscriptions"
+                       asp-action="My">
+                        My Subscriptions
+                    </a>
+                }
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin"
+                       asp-action="Index">
+                        Admin Dashboard
+                    </a>
+
+                    <a asp-controller="Subscriptions"
+                       asp-action="Index">
+                        Manage Subscriptions
+                    </a>
+
+                    <a asp-controller="Members"
+                       asp-action="Index">
+                        Manage Members
+                    </a>
+                }
+
+                <a asp-controller="Account"
+                   asp-action="Login">
+                    My Account
+                </a>
+
+                <form asp-controller="Account"
+                      asp-action="Logout"
+                      method="post"
+                      style="display: inline;">
+
+                    <button type="submit" class="gymButton">
+                        Logout
+                    </button>
+
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account"
+                   asp-action="Login">
+                    Login
+                </a>
+
+                <a asp-controller="Account"
+                   asp-action="Signup">
+                    Sign Up
+                </a>
+            }
+
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer>
+
+        <p>Gym Membership Management System</p>
+
+        <p>Learn more about our gym:</p>
+
+        <img src="/images/gym-interior.jpeg"
+             alt="Gym Interior - About Our Gym"
+             class="gym-photo"
+             style="width: 120px; height: auto;"
+             usemap="#sharedGymMap" />
+
+        <map name="sharedGymMap">
+            <area shape="default"
+                  href="@Url.Action("About", "Home")"
+                  alt="About Our Gym" />
+        </map>
+
+    </footer>
+
+    <script src="~/js/script.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Member Login</h1>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <p>Welcome, @User.Identity.Name!</p>
+
+    <p>
+        You are signed in as:
+        @(User.IsInRole("Admin") ? "Admin" : "Member")
+    </p>
+
+    <form asp-controller="Account" asp-action="Logout" method="post">
+        <button type="submit" class="gymButton">
+            Logout
+        </button>
+    </form>
+}
+else
+{
+    <p>Sign in to access your gym membership.</p>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <p style="color: orange;">
+            @TempData["SuccessMessage"]
+        </p>
+    }
+
+    <form asp-controller="Account"
+          asp-action="Login"
+          method="post"
+          onsubmit="return validateLogin()">
+
+        <p>
+            <label>
+                Email:
+                <input type="email"
+                       name="email"
+                       id="loginEmail"
+                       required>
+            </label>
+        </p>
+
+        <p>
+            <label>
+                Password:
+                <input type="password"
+                       name="password"
+                       id="loginPassword"
+                       required>
+            </label>
+        </p>
+
+        <input type="submit"
+               value="Login"
+               class="gymButton">
+
+        <p id="loginMessage"></p>
+
+        @if (ViewBag.Message != null)
+        {
+            <p style="color: orange;">
+                @ViewBag.Message
+            </p>
+        }
+
+    </form>
+}
+
+<h2>Our Reception Area</h2>
+
+<p>Welcome to our gym.</p>
+
+<img src="/images/gym-reception.jpeg"
+     alt="Gym Reception"
+     class="gym-photo"
+     usemap="#gymmap">
+
+<map name="gymmap">
+    <area shape="default"
+          href="@Url.Action("About", "Home")"
+          alt="About Our Gym">
+</map>

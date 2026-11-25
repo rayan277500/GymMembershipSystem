@@ -1,0 +1,78 @@
+@model GymMembershipSystemA3.Models.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h1>Admin Dashboard</h1>
+
+<p>Welcome, @User.Identity?.Name!</p>
+
+<p>Manage gym members and membership plans.</p>
+
+<h2>System Overview</h2>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 25px 0;">
+
+    <div style="background: #333; padding: 20px; border: 2px solid orange; border-radius: 10px;">
+        <h3>Registered Members</h3>
+        <h2>@Model.MemberCount</h2>
+    </div>
+
+    <div style="background: #333; padding: 20px; border: 2px solid orange; border-radius: 10px;">
+        <h3>Administrators</h3>
+        <h2>@Model.AdminCount</h2>
+    </div>
+
+    <div style="background: #333; padding: 20px; border: 2px solid orange; border-radius: 10px;">
+        <h3>Membership Plans</h3>
+        <h2>@Model.PlanCount</h2>
+    </div>
+
+</div>
+
+<h2>Manage Membership Plans</h2>
+
+<p>Create, edit, and delete gym membership plans.</p>
+
+<a asp-controller="MembershipPlans"
+   asp-action="Index"
+   class="gymButton">
+    Manage Plans
+</a>
+
+<h2 style="margin-top: 35px;">Registered Accounts</h2>
+
+@if (Model.Members.Count == 0)
+{
+    <p>No registered accounts found.</p>
+}
+else
+{
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Phone Number</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Registration Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var member in Model.Members)
+                {
+                    <tr>
+                        <td>@member.FullName</td>
+                        <td>@member.PhoneNumber</td>
+                        <td>@member.Email</td>
+                        <td>@member.Role</td>
+                        <td>@member.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

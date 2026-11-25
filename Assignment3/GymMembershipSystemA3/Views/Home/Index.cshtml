@@ -1,0 +1,163 @@
+﻿@model IEnumerable<GymMembershipSystemA3.Models.MembershipPlan>
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<style>
+    caption {
+        color: orange;
+        font-weight: bold;
+    }
+</style>
+
+<h1>Welcome to Our Gym</h1>
+
+<p>Gym Membership Management System</p>
+
+<h2 style="color: orange;">Membership Plans</h2>
+
+<p>Explore our available gym membership plans and prices.</p>
+
+<table class="plans-table">
+    <caption>Gym Membership Prices</caption>
+
+    <thead>
+        <tr>
+            <th>Plan</th>
+            <th>Duration</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var plan in Model)
+            {
+                <tr>
+                    <td>@plan.Name</td>
+
+                    <td>
+                        @plan.DurationMonths
+                        @(plan.DurationMonths == 1 ? "Month" : "Months")
+                    </td>
+
+                    <td>
+                        @plan.Price.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) SAR
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">
+                    No membership plans are currently available.
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-controller="MembershipPlans"
+       asp-action="Index"
+       class="gymButton">
+        View Membership Plans
+    </a>
+</p>
+
+<h2 id="gymTitle">Our Gym Interior</h2>
+
+<p id="gymDescription">
+    Take a look inside our gym.
+</p>
+
+<img id="gymPhoto"
+     src="/images/gym-interior.jpeg"
+     alt="Gym Interior"
+     class="gym-photo"
+     usemap="#gymmap">
+
+<map name="gymmap">
+    <area shape="default"
+          href="@Url.Action("About", "Home")"
+          alt="About Our Gym">
+</map>
+
+<p>Explore Our Gym Areas:</p>
+
+<button type="button"
+        class="gymButton"
+        onclick="showGymPhoto('interior')">
+    Gym Interior
+</button>
+
+<button type="button"
+        class="gymButton"
+        onclick="showGymPhoto('cardio')">
+    Cardio Area
+</button>
+
+<button type="button"
+        class="gymButton"
+        onclick="showGymPhoto('weights')">
+    Weight Training
+</button>
+
+<section>
+    <h2>About Our System</h2>
+
+    <p>
+        The Gym Membership Management System is a website
+        designed to make gym membership easier for
+        customers and gym administrators.
+    </p>
+
+    <h2>System Features</h2>
+
+    <h3>Visitor Features</h3>
+
+    <ul>
+        <li>View gym information and facilities.</li>
+        <li>Explore gym photos and equipment.</li>
+        <li>Compare membership plans and prices.</li>
+        <li>Create a gym account.</li>
+        <li>Log in to access member services.</li>
+    </ul>
+
+    <h3>Member Features</h3>
+
+    <ul>
+        <li>Create an account and log in.</li>
+        <li>View available membership plans.</li>
+        <li>Request a new gym membership.</li>
+        <li>View membership status and expiration dates.</li>
+        <li>Request membership renewals.</li>
+        <li>View subscription history.</li>
+        <li>Check gym occupancy and crowd levels.</li>
+        <li>Check in and check out of the gym.</li>
+    </ul>
+
+    <h3>Admin Features</h3>
+
+    <ul>
+        <li>Access the admin dashboard.</li>
+        <li>View and manage registered gym members.</li>
+        <li>Search for members by name, phone number, or email.</li>
+        <li>Manage membership plans and prices.</li>
+        <li>Approve or reject membership requests.</li>
+        <li>Cancel active and renewed memberships.</li>
+        <li>Monitor gym occupancy and crowd levels.</li>
+        <li>View member check-in and check-out records.</li>
+    </ul>
+
+    <h2>Our Goal</h2>
+
+    <p>
+        Our goal is to create a simple and organized
+        system that saves time, improves the gym experience,
+        and makes membership management more efficient.
+    </p>
+</section>

@@ -1,0 +1,168 @@
+@model GymMembershipSystemA3.Models.MemberDetailsViewModel
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Member Details";
+    DateTime now = DateTime.UtcNow;
+}
+
+<h1>Member Details</h1>
+
+@if (TempData["Message"] != null)
+{
+    <p style="color: orange;">@TempData["Message"]</p>
+}
+
+<h2>Personal Information</h2>
+
+<p><strong>Full Name:</strong> @Model.Member.FullName</p>
+
+<p><strong>Phone Number:</strong> @Model.Member.PhoneNumber</p>
+
+<p><strong>Email:</strong> @Model.Member.Email</p>
+
+<p><strong>Role:</strong> @Model.Member.Role</p>
+
+<p>
+    <strong>Registration Date:</strong>
+    @Model.Member.CreatedAt.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+</p>
+
+<p>
+    <a asp-controller="Members"
+       asp-action="Edit"
+       asp-route-id="@Model.Member.Id"
+       class="gymButton">
+        Edit Member
+    </a>
+</p>
+
+<h2>Membership History</h2>
+
+@if (!Model.Subscriptions.Any())
+{
+    <p>This member has no subscriptions.</p>
+}
+else
+{
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Plan</th>
+                    <th>Status</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var subscription in Model.Subscriptions)
+                {
+                    bool isApproved =
+                        subscription.Status == "Active" ||
+                        subscription.Status == "Renewed";
+
+                    string status =
+                        isApproved &&
+                        subscription.EndDate.HasValue &&
+                        subscription.EndDate.Value <= now
+                            ? "Expired"
+                            : subscription.Status;
+
+                    <tr>
+                        <td>@subscription.MembershipPlan.Name</td>
+
+                        <td>@status</td>
+
+                        <td>
+                            @(subscription.StartDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "-")
+                        </td>
+
+                        <td>
+                            @(subscription.EndDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "-")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<p>
+    <a asp-controller="Subscriptions"
+       asp-action="Index"
+       asp-route-searchName="@Model.Member.FullName"
+       asp-route-searchPhone="@Model.Member.PhoneNumber"
+       class="gymButton">
+        Manage This Member's Subscriptions
+    </a>
+</p>
+
+<h2>Gym Visit History</h2>
+
+<p style="color: orange;">
+    All check-in and check-out times use Saudi Arabia Time (UTC+3).
+</p>
+
+@if (!Model.Visits.Any())
+{
+    <p>This member has no gym visits.</p>
+}
+else
+{
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Check-in Date</th>
+                    <th>Check-in Time</th>
+                    <th>Check-out Date</th>
+                    <th>Check-out Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var visit in Model.Visits)
+                {
+                    <tr>
+                        <td>
+                            @visit.CheckInAt.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                        </td>
+
+                        <td>
+                            @visit.CheckInAt.ToString("hh:mm tt", CultureInfo.InvariantCulture)
+                        </td>
+
+                        @if (visit.CheckOutAt.HasValue)
+                        {
+                            <td>
+                                @visit.CheckOutAt.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                            </td>
+
+                            <td>
+                                @visit.CheckOutAt.Value.ToString("hh:mm tt", CultureInfo.InvariantCulture)
+                            </td>
+
+                            <td>Completed</td>
+                        }
+                        else
+                        {
+                            <td>-</td>
+                            <td>-</td>
+                            <td>Inside</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<p>
+    <a asp-controller="Members"
+       asp-action="Index">
+        Back to Members
+    </a>
+</p>

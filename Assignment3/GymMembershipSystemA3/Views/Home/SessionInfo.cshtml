@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Session Information";
+}
+
+<h1>Session Information</h1>
+
+<p>View the information stored in your current session.</p>
+
+<h2>Current Session</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Session Data</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>Visitor ID</td>
+            <td>
+                @(ViewBag.SessionId ?? "No session found")
+            </td>
+        </tr>
+
+        <tr>
+            <td>Username</td>
+            <td>
+                @(ViewBag.SessionUsername ?? "No username found")
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p>
+    Session information is stored temporarily on the server.
+</p>
+
+<a asp-controller="Home"
+   asp-action="Index"
+   class="gymButton">
+    Back to Home
+</a>

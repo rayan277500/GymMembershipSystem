@@ -1,0 +1,127 @@
+@model IEnumerable<GymMembershipSystemA3.Models.GymMember>
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Manage Members";
+}
+
+<h1>Manage Members</h1>
+
+<p>View and manage registered gym members.</p>
+
+@if (TempData["Message"] != null)
+{
+    <p style="color: orange;">@TempData["Message"]</p>
+}
+
+<h2>Search Members</h2>
+
+<p>Search by name, phone number, email, or a combination of them.</p>
+
+<form asp-controller="Members"
+      asp-action="Index"
+      method="get"
+      style="display: flex; gap: 15px; flex-wrap: wrap; align-items: end; margin: 25px 0;">
+
+    <div>
+        <label for="searchName">Member Name</label>
+        <p>
+            <input type="text"
+                   id="searchName"
+                   name="searchName"
+                   value="@ViewBag.SearchName"
+                   placeholder="Enter member name"
+                   style="padding: 10px; border-radius: 5px;" />
+        </p>
+    </div>
+
+    <div>
+        <label for="searchPhone">Phone Number</label>
+        <p>
+            <input type="tel"
+                   id="searchPhone"
+                   name="searchPhone"
+                   value="@ViewBag.SearchPhone"
+                   placeholder="Enter phone number"
+                   style="padding: 10px; border-radius: 5px;" />
+        </p>
+    </div>
+
+    <div>
+        <label for="searchEmail">Email</label>
+        <p>
+            <input type="text"
+                   id="searchEmail"
+                   name="searchEmail"
+                   value="@ViewBag.SearchEmail"
+                   placeholder="Enter email"
+                   style="padding: 10px; border-radius: 5px;" />
+        </p>
+    </div>
+
+    <button type="submit" class="gymButton">
+        Search
+    </button>
+
+    <a asp-controller="Members"
+       asp-action="Index"
+       class="gymButton">
+        Show All
+    </a>
+</form>
+
+<h2>Registered Members</h2>
+
+@if (!Model.Any())
+{
+    <p>No matching members found.</p>
+}
+else
+{
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Phone Number</th>
+                    <th>Email</th>
+                    <th>Registration Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var member in Model)
+                {
+                    <tr>
+                        <td>@member.FullName</td>
+
+                        <td>@member.PhoneNumber</td>
+
+                        <td>@member.Email</td>
+
+                        <td>
+                            @member.CreatedAt.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        </td>
+
+                        <td>
+                            <a asp-controller="Members"
+                               asp-action="Details"
+                               asp-route-id="@member.Id">
+                                Details
+                            </a>
+
+                            |
+
+                            <a asp-controller="Members"
+                               asp-action="Edit"
+                               asp-route-id="@member.Id">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
